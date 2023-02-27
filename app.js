@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import { Client, Events, GatewayIntentBits } from 'discord.js';
 import {
   InteractionType,
   InteractionResponseType,
@@ -186,6 +187,32 @@ if (name === 'challenge' && id) {
     }
   }
 });
+
+app.get('/', async function (req, res) {
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+
+client.once(Events.ClientReady, () => {
+	console.log('Ready!');
+});
+
+client.on(Events.InteractionCreate, interaction => {
+	if (!interaction.isChatInputCommand()) return;
+
+	const { commandName } = interaction;
+
+	if (commandName === 'ping') {
+		interaction.reply('Pong.');
+	} else if (commandName === 'beep') {
+		interaction.reply('Boop.');
+	} else if (commandName === 'server') {
+		interaction.reply('Guild name: ' + interaction.guild.name + '\nTotal members: ' + interaction.guild.memberCount);
+	} else if (commandName === 'user-info') {
+		interaction.reply('Your username: ' + interaction.user.username + '\nYour ID: ' + interaction.user.id);
+	}
+});
+
+client.login(process.env.DISCORD_TOKEN);
+})
 
 app.listen(PORT, () => {
   console.log('Listening on port', PORT);
