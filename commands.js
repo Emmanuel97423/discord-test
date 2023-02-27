@@ -65,6 +65,12 @@ export const TEST_COMMAND = {
   type: 1,
 };
 
+export const MANU_COMMAND = {
+  name: 'manu',
+  description: 'Basic guild command',
+  type: 1,
+};
+
 // Command containing options
 export const CHALLENGE_COMMAND = {
   name: 'challenge',

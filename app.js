@@ -12,6 +12,7 @@ import { getShuffledOptions, getResult } from './game.js';
 import {
   CHALLENGE_COMMAND,
   TEST_COMMAND,
+  MANU_COMMAND,
   HasGuildCommands,
 } from './commands.js';
 
@@ -29,6 +30,7 @@ const activeGames = {};
  * Interactions endpoint URL where Discord will send HTTP requests
  */
 app.post('/interactions', async function (req, res) {
+  console.log('req:', req.body)
   // Interaction type and data
   const { type, id, data } = req.body;
 
@@ -53,44 +55,54 @@ app.post('/interactions', async function (req, res) {
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
           // Fetches a random emoji to send from a helper function
-          content: 'hello world ' + getRandomEmoji(),
+          content: 'Salut manu ' + getRandomEmoji(),
         },
       });
     }
-    // "challenge" guild command
-    if (name === 'challenge' && id) {
-      const userId = req.body.member.user.id;
-      // User's object choice
-      const objectName = req.body.data.options[0].value;
-
-      // Create active game using message ID as the game ID
-      activeGames[id] = {
-        id: userId,
-        objectName,
-      };
-
+    if (name === 'manu') {
+      // Send a message into the channel where command was triggered from
       return res.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
           // Fetches a random emoji to send from a helper function
-          content: `Rock papers scissors challenge from <@${userId}>`,
-          components: [
-            {
-              type: MessageComponentTypes.ACTION_ROW,
-              components: [
-                {
-                  type: MessageComponentTypes.BUTTON,
-                  // Append the game ID to use later on
-                  custom_id: `accept_button_${req.body.id}`,
-                  label: 'Accept',
-                  style: ButtonStyleTypes.PRIMARY,
-                },
-              ],
-            },
-          ],
+          content: 'Salut manu Narcisse' + getRandomEmoji(),
         },
       });
     }
+    // "challenge" guild command
+if (name === 'challenge' && id) {
+    const userId = req.body.member.user.id;
+    // User's object choice
+    const objectName = req.body.data.options[0].value;
+
+    // Create active game using message ID as the game ID
+    activeGames[id] = {
+        id: userId,
+        objectName,
+    };
+
+    return res.send({
+    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+    data: {
+        // Fetches a random emoji to send from a helper function
+        content: `Rock papers scissors challenge from <@${userId}>`,
+        components: [
+        {
+            type: MessageComponentTypes.ACTION_ROW,
+            components: [
+            {
+                type: MessageComponentTypes.BUTTON,
+                // Append the game ID to use later on
+                custom_id: `accept_button_${req.body.id}`,
+                label: 'Accept',
+                style: ButtonStyleTypes.PRIMARY,
+            },
+            ],
+        },
+        ],
+    },
+    });
+}
   }
 
   /**
@@ -182,5 +194,6 @@ app.listen(PORT, () => {
   HasGuildCommands(process.env.APP_ID, process.env.GUILD_ID, [
     TEST_COMMAND,
     CHALLENGE_COMMAND,
+    MANU_COMMAND
   ]);
 });
